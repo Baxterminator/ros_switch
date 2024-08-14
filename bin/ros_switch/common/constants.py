@@ -44,6 +44,7 @@ match platform.system():
             )
     case "Darwin":
         OS_TYPE = OSType.MACOS
+        # TODO: Set admin path for configuration
         IS_ADMIN = os.getuid() == 0
         ADMIN_CONF_DIR = ""
         if IS_ADMIN:

@@ -1,87 +1,45 @@
-#!/usr/bin/env python3
+#!/bin/bash
 
-from argparse import ArgumentParser
-import sys
-from enum import Enum
+get_script_dir() {
+    SOURCE=$1
+    while [ -L "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+      DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
+      SOURCE=$(readlink "$SOURCE")
+      [[ $SOURCE != /* ]] && SOURCE=$DIR/$SOURCE # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+    done
+    DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
+    echo $DIR
+}
 
+replace_in_str() {
+  echo ${1//"$2"/"$3"}
+}
 
-class Commands(Enum):
-    LOAD = "load"
-    LIST = "ls"
-    GEN = "gen"
-    NEW = "new"
-    EXTEND = "extend"
+format_msg() {
+  local msg=$(replace_in_str "$1" "%20" " ")
+  msg=$(replace_in_str "$msg" "%21" "\n")
+  msg=$(replace_in_str "$msg" "%22" "\t")
+  echo "$msg"
+}
 
-    @staticmethod
-    def is_value(txt: str) -> bool:
-        """
-        Return True if the value exist, false otherwise
+# Get the script directory
+DIR="$(get_script_dir ${BASH_SOURCE[0]})"
 
-        Args:
-            txt (str): the command to find
+# Call the python script
+output=$(cd $DIR; python3 rosswitch_py.py "$@")
+read -r -a arr <<< $output
+lvl=${arr[0]}
+msg=$(format_msg ${arr[1]})
 
-        Returns:
-            bool: True if the command exist, false otherwise
-        """
-        if txt == "-h" or txt == "--help":
-            return True
-        for cmd in Commands.__members__.values():
-            if txt == cmd.value:
-                return True
-        return False
-
-
-def setup_parser() -> ArgumentParser:
-    """
-    Setup the argument parser for the program
-
-    Returns:
-        ArgumentParser: the configured parser
-    """
-    parser = ArgumentParser()
-    sp = parser.add_subparsers(dest="command", required=True)
-
-    # Load configuration arguments
-    load_parser = sp.add_parser(Commands.LOAD.value)
-    load_parser.add_argument("name")
-
-    # List configurations arguments
-    sp.add_parser(Commands.LIST.value)
-
-    # Force regenerate a configuration arguments
-    gen_parser = sp.add_parser(Commands.GEN.value)
-    gen_parser.add_argument("name")
-
-    # Create a new configuration arguments
-    new_parser = sp.add_parser(Commands.NEW.value)
-    new_parser.add_argument("name")
-
-    # Extend an existing configuration arguments
-    extend_parser = sp.add_parser(Commands.EXTEND.value)
-    extend_parser.add_argument("parent")
-    extend_parser.add_argument("child")
-
-    return parser
-
-
-if __name__ == "__main__":
-    argc = len(sys.argv)
-    parser = setup_parser()
-
-    if len(sys.argv) == 2 and not Commands.is_value(sys.argv[1]):
-        sys.argv.insert(1, Commands.LOAD.value)
-
-    args = parser.parse_args()
-    match Commands(args.command):
-        case Commands.LOAD:
-            print("Loading configuration ...")
-        case Commands.LIST:
-            print("Listing configurations ...")
-        case Commands.GEN:
-            print("Regenerating configuration ...")
-        case Commands.NEW:
-            print("Creating new configuration ...")
-        case Commands.EXTEND:
-            print("Making new configuration from parent ...")
-        case _:
-            pass
+# Act upon the output
+if [[ "$lvl" = "error" ]]; then
+  RED='\033[0;31m'
+  NC='\033[0m' # No Color
+  echo -e "${RED}Error: $msg${NC}"
+elif [[ "$lvl" = "load" ]]; then
+  a=1
+elif [[ "$lvl" = "txt" ]]; then
+  echo -e "$msg"
+elif [[ ! -z "$output" ]]; then
+  echo "$output"
+fi

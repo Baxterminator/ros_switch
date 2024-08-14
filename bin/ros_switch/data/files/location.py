@@ -1,7 +1,7 @@
 import os
 from typing import Dict, List, Tuple
 
-from ...__common__.constants import CONF_DIR, INSTALL_DIR, IS_ADMIN
+from ...common.constants import CONF_DIR, INSTALL_DIR, IS_ADMIN
 
 # -----------------------------------------------------------------------------
 # Constants
@@ -89,7 +89,7 @@ def find_user_configs(existing_name: List[str]) -> Dict[str, Tuple[str, str]]:
     return __find_profiles_in_dir(CONF_DIR, "USER ", existing_name)
 
 
-def find_preset_files() -> Dict[str, Tuple[str, str]]:
+def find_preset_files() -> Dict[str, Dict[str, Tuple[str, str]]]:
     """
     Find all presets found on the system
 
@@ -97,4 +97,4 @@ def find_preset_files() -> Dict[str, Tuple[str, str]]:
         Dict[str, Tuple[str, str]]: a map (k,v) of {preset_name: (tag, preset_path)}
     """
     admin = find_admin_configs()
-    return {**admin, **find_user_configs(admin.keys())}  # type: ignore
+    return {"admin": admin, "user": find_user_configs(admin.keys())}  # type: ignore
