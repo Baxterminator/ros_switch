@@ -22,24 +22,47 @@ format_msg() {
   echo "$msg"
 }
 
-# Get the script directory
-DIR="$(get_script_dir ${BASH_SOURCE[0]})"
+is_debug() {
+  for k in $@; do
+    if [[ "$k" == "-d" ]]; then
+      echo 1
+      return
+    fi
+  done
+  echo 0
+}
+debug=$(is_debug $@)
 
-# Call the python script
+# Get the script directory and call the Python script
+DIR="$(get_script_dir ${BASH_SOURCE[0]})"
 output=$(cd $DIR; python3 rosswitch_py.py "$@")
 read -r -a arr <<< $output
-lvl=${arr[0]}
-msg=$(format_msg ${arr[1]})
 
-# Act upon the output
-if [[ "$lvl" = "error" ]]; then
-  RED='\033[0;31m'
-  NC='\033[0m' # No Color
-  echo -e "${RED}Error: $msg${NC}"
-elif [[ "$lvl" = "load" ]]; then
-  a=1
-elif [[ "$lvl" = "txt" ]]; then
-  echo -e "$msg"
-elif [[ ! -z "$output" ]]; then
-  echo "$output"
+# Get length of an array and test for odd values so that we get
+# a even value for array length (to keep key-value pairs)
+let arr_length=${#arr[@]}
+if [ "$(( arr_length % 2 ))" -ne 0 ]; 
+then
+  arr_length=$arr_length-1
 fi
+
+# Iterate over the key values
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+for (( i=0; i<${arr_length}; i=i+2 ));
+do
+  key=${arr[i]}
+  val=$(format_msg ${arr[i+1]})
+
+  # Act upon the output
+  if [[ "$key" = "error" ]]; then
+    echo -e "${RED}Error: $val${NC}"
+  elif [[ "$key" = "load" ]]; then
+    a=1
+  elif [[ "$key" = "txt" ]]; then # Just a message
+    echo -e "[ROSSWITCH] $val"
+  else # Else, just throw the output
+    echo -e "${RED}Error: Unrecognized key \"${key}\""
+    echo -e "\tWith val: ${val}${NC}"
+  fi
+done

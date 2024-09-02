@@ -1,11 +1,19 @@
 #!/usr/bin/env python3
 
+# =============================================================================
+#                               ROS SWITCH
+# ROS Switch is a project that let you switch between several ROS environments
+# based on YAML Configurations files. It aims to be highly customizable while
+# remaining simple enough while using it
+# =============================================================================
+
 from argparse import ArgumentParser
+from math import pi
 import sys
 from enum import Enum
 
 from ros_switch.commands import load, list_configs
-from ros_switch.common.shell_msgs import error_msg
+from ros_switch.common import Shell
 
 
 class Commands(Enum):
@@ -42,6 +50,7 @@ def setup_parser() -> ArgumentParser:
         ArgumentParser: the configured parser
     """
     parser = ArgumentParser(prog="rosswitch")
+    parser.add_argument("-d", "--debug", dest="debug", action="store_true")
     sp = parser.add_subparsers(dest="command", required=True)
 
     # Load configuration arguments
@@ -71,23 +80,30 @@ if __name__ == "__main__":
     argc = len(sys.argv)
     parser = setup_parser()
 
+    # If no command is provided, consider it as a configuration file
+    # This provide
     if len(sys.argv) == 2 and not Commands.is_value(sys.argv[1]):
         sys.argv.insert(1, Commands.LOAD.value)
+
+    Shell.txt("Test 1")
+    Shell.txt("Test 2")
 
     args = parser.parse_args()
     try:
         match Commands(args.command):
             case Commands.LOAD:
-                print(load(args.name))
+                load(args.name)
             case Commands.LIST:
-                print(list_configs())
+                list_configs()
             case Commands.GEN:
-                print("Regenerating configuration ...")
+                Shell.txt("Regenerating configuration ...")
             case Commands.NEW:
-                print("Creating new configuration ...")
+                Shell.txt("Creating new configuration ...")
             case Commands.EXTEND:
-                print("Making new configuration from parent ...")
+                Shell.txt("Making new configuration from parent ...")
             case _:
                 pass
     except RuntimeError as e:
-        print(error_msg(f"The command {args.command} is not ok.\n{repr(e)}"))
+        Shell.error(f"The command {args.command} is not ok.\n{repr(e)}")
+    finally:
+        print(Shell.str())

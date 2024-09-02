@@ -1,6 +1,6 @@
-from ..common.shell_msgs import load_msg
+from ..common import Shell
 
 
-def load(config_name: str) -> str:
+def load(config_name: str) -> None:
 
-    return load_msg("")
+    Shell.load("")

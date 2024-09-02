@@ -1,4 +1,4 @@
-from ..common.shell_msgs import txt_msg
+from ..common import Shell
 from ..data.files.location import find_preset_files
 
 
@@ -7,7 +7,7 @@ USER_SECTION = "User configurations:"
 EOL = "\n"
 
 
-def list_configs() -> str:
+def list_configs() -> None:
     # Get configs
     files = find_preset_files()
 
@@ -28,4 +28,4 @@ def list_configs() -> str:
         for name, t in files["user"].items():
             msg += f"\t- {name} -> {t[1]}" + EOL
 
-    return txt_msg(msg)
+    Shell.txt(msg)

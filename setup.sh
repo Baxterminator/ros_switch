@@ -12,5 +12,8 @@ get_script_dir() {
 }
 
 # Get the script directory
-DIR="$(get_script_dir $0)"
-export PATH="$PATH:$DIR/bin"
+export PATH="$PATH:$(get_script_dir $0)/bin"
+
+alias rswitch=rosswitch
+alias rswtch=rosswitch
+alias colbuild=colcon build --symlink-install
