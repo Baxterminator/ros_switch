@@ -24,7 +24,7 @@ format_msg() {
 
 is_debug() {
   for k in $@; do
-    if [[ "$k" == "-d" ]]; then
+    if [[ "$k" == "-d" ]]; then 
       echo 1
       return
     fi
@@ -46,6 +46,8 @@ then
   arr_length=$arr_length-1
 fi
 
+
+
 # Iterate over the key values
 RED='\033[0;31m'
 NC='\033[0m' # No Color
@@ -55,12 +57,10 @@ do
   val=$(format_msg ${arr[i+1]})
 
   # Act upon the output
-  if [[ "$key" = "error" ]]; then
-    echo -e "${RED}Error: $val${NC}"
-  elif [[ "$key" = "load" ]]; then
-    a=1
+  if [[ "$key" = "load" ]]; then
+    source ${val}
   elif [[ "$key" = "txt" ]]; then # Just a message
-    echo -e "[ROSSWITCH] $val"
+    echo -e "$val"
   else # Else, just throw the output
     echo -e "${RED}Error: Unrecognized key \"${key}\""
     echo -e "\tWith val: ${val}${NC}"

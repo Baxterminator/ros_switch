@@ -12,34 +12,17 @@ from math import pi
 import sys
 from enum import Enum
 
-from ros_switch.commands import load, list_configs
+from ros_switch.commands import (
+    Commands,
+    load,
+    list_configs,
+    ListArgs,
+    generate_files,
+    GenArgs,
+)
 from ros_switch.common import Shell
 
-
-class Commands(Enum):
-    LOAD = "load"
-    LIST = "ls"
-    GEN = "gen"
-    NEW = "new"
-    EXTEND = "extend"
-
-    @staticmethod
-    def is_value(txt: str) -> bool:
-        """
-        Return True if the value exist, false otherwise
-
-        Args:
-            txt (str): the command to find
-
-        Returns:
-            bool: True if the command exist, false otherwise
-        """
-        if txt == "-h" or txt == "--help":
-            return True
-        for cmd in Commands.__members__.values():
-            if txt == cmd.value:
-                return True
-        return False
+from ros_switch.commands.list import ListArgs
 
 
 def setup_parser() -> ArgumentParser:
@@ -50,28 +33,45 @@ def setup_parser() -> ArgumentParser:
         ArgumentParser: the configured parser
     """
     parser = ArgumentParser(prog="rosswitch")
-    parser.add_argument("-d", "--debug", dest="debug", action="store_true")
+    parser.add_argument(
+        "-d",
+        "--debug",
+        dest="debug",
+        action="store_true",
+        help="display debug informations",
+    )
     sp = parser.add_subparsers(dest="command", required=True)
 
     # Load configuration arguments
-    load_parser = sp.add_parser(Commands.LOAD.value)
+
+    load_parser = sp.add_parser(Commands.LOAD.value, help=": load a custom profile")
     load_parser.add_argument("name")
 
     # List configurations arguments
-    sp.add_parser(Commands.LIST.value)
+    ListArgs.setup_parser(sp)  # type: ignore
 
     # Force regenerate a configuration arguments
-    gen_parser = sp.add_parser(Commands.GEN.value)
+    # GenArgs.setup_parser(sp)  # type: ignore
+    gen_parser = sp.add_parser(
+        Commands.GEN.value,
+        help=": (re-)generate the files for the given profile",
+    )
     gen_parser.add_argument("name")
 
     # Create a new configuration arguments
-    new_parser = sp.add_parser(Commands.NEW.value)
+    new_parser = sp.add_parser(
+        Commands.NEW.value,
+        help=": create a new profile with the given name",
+    )
     new_parser.add_argument("name")
 
     # Extend an existing configuration arguments
-    extend_parser = sp.add_parser(Commands.EXTEND.value)
+    extend_parser = sp.add_parser(
+        Commands.EXTEND.value,
+        help=": create a new configuration based on the given one",
+    )
     extend_parser.add_argument("parent")
-    extend_parser.add_argument("child")
+    extend_parser.add_argument("new")
 
     return parser
 
@@ -85,25 +85,38 @@ if __name__ == "__main__":
     if len(sys.argv) == 2 and not Commands.is_value(sys.argv[1]):
         sys.argv.insert(1, Commands.LOAD.value)
 
-    Shell.txt("Test 1")
-    Shell.txt("Test 2")
+    # Test for help (special case for the shell escaping)
+    if "-h" in sys.argv or "--help" in sys.argv:
+        Shell.txt(parser.format_help())
+        print(Shell.to_str())
+        exit(0)
 
+    # Process arguments
     args = parser.parse_args()
+
+    # Enable debug messages ?
+    Shell.enable_debug_msgs(args.debug)
+
+    # Run command
     try:
         match Commands(args.command):
             case Commands.LOAD:
                 load(args.name)
             case Commands.LIST:
+                Shell.print_header()
                 list_configs()
             case Commands.GEN:
-                Shell.txt("Regenerating configuration ...")
+                Shell.print_header()
+                generate_files(args.name)
             case Commands.NEW:
+                Shell.print_header()
                 Shell.txt("Creating new configuration ...")
             case Commands.EXTEND:
+                Shell.print_header()
                 Shell.txt("Making new configuration from parent ...")
             case _:
                 pass
     except RuntimeError as e:
-        Shell.error(f"The command {args.command} is not ok.\n{repr(e)}")
+        Shell.error(e.__str__())
     finally:
-        print(Shell.str())
+        print(Shell.to_str())
