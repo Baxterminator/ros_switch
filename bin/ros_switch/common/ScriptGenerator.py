@@ -65,7 +65,7 @@ class ScriptGenerator:
                 len(self._config.workspaces),
             )
             for wkspace in self._config.workspaces:
-                load_script.write(f'source "{wkspace}/install/setup.sh"\n')
+                load_script.write(f'source "{wkspace}/install/local_setup.sh"\n')
 
             # Generate post-load commands
             ScriptGenerator.log_step(
@@ -138,7 +138,7 @@ class ScriptGenerator:
                     f"Compiled with {APP_NAME.upper()} - {VERSION}",
                     f"(c) {AUTHOR} - {YEAR}",
                     "",
-                    f'Preset "{preset_name}" by {config.metadata.author}',
+                    f'Preset "{preset_name}" by {config.metadata.author} - {config.metadata.date}',
                     f"(compiled {datetime.today().strftime('%d/%m/%Y - %d %b %Y')})",
                     "",
                     Justify.LEFT,

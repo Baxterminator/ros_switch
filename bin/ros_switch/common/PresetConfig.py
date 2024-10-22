@@ -21,6 +21,7 @@ class ROSVersion(IntEnum):
 class MetaData:
     description: str = ""
     author: str = ""
+    date: str = ""
 
 
 @YAMLObject(tag="preset")

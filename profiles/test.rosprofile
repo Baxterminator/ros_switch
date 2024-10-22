@@ -1,4 +1,13 @@
 preset:
+    metadata:
+        author: Meltwin
+        date: "10/2024"
+        description: >
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam convallis feugiat vehicula.
+            Nulla eget vehicula libero. Suspendisse at ipsum nec ligula consectetur posuere. Integer at magna id massa ornare pulvinar sit amet vel massa.
+            Nulla tristique mollis nisi eu auctor. Aenean imperdiet urna elementum condimentum ultrices. Phasellus ultrices arcu id vulputate tincidunt. 
+            Etiam gravida ante a quam efficitur convallis. Morbi semper quam ut lacus feugiat, eget scelerisque est vehicula. Fusce cursus eget purus ut rutrum. 
+            Phasellus cursus orci justo. Integer pulvinar congue ipsum vitae egestas. Pellentesque non pharetra erat.
     ros_version: 1
     env_var:
         TEST1: 0
@@ -7,6 +16,3 @@ preset:
         - "echo 'Hello World'"
     workspaces:
         - "$HOME/Prog/ROS2/dtu"
-    metadata:
-        author: Meltwin
-        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam convallis feugiat vehicula. Nulla eget vehicula libero. Suspendisse at ipsum nec ligula consectetur posuere. Integer at magna id massa ornare pulvinar sit amet vel massa. Nulla tristique mollis nisi eu auctor. Aenean imperdiet urna elementum condimentum ultrices. Phasellus ultrices arcu id vulputate tincidunt. Etiam gravida ante a quam efficitur convallis. Morbi semper quam ut lacus feugiat, eget scelerisque est vehicula. Fusce cursus eget purus ut rutrum. Phasellus cursus orci justo. Integer pulvinar congue ipsum vitae egestas. Pellentesque non pharetra erat. "

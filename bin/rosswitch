@@ -35,18 +35,16 @@ debug=$(is_debug $@)
 
 # Get the script directory and call the Python script
 DIR="$(get_script_dir ${BASH_SOURCE[0]})"
-output=$(cd $DIR; python3 rosswitch_py.py "$@")
+output=$(cd $DIR; python3 .rosswitch_py.py "$@")
 read -r -a arr <<< $output
 
-# Get length of an array and test for odd values so that we get
+# Get length of the array and test for odd values so that we get
 # a even value for array length (to keep key-value pairs)
 let arr_length=${#arr[@]}
 if [ "$(( arr_length % 2 ))" -ne 0 ]; 
 then
   arr_length=$arr_length-1
 fi
-
-
 
 # Iterate over the key values
 RED='\033[0;31m'
