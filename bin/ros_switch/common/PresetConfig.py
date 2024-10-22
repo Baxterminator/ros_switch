@@ -1,7 +1,8 @@
 from enum import IntEnum
+from typing import Dict, List
+from dataclasses import field
 
 from ..utils.YAMLObject import YAMLObject
-from .ShellCom import Shell
 
 
 class ROSVersion(IntEnum):
@@ -16,9 +17,25 @@ class ROSVersion(IntEnum):
         return "NotFound"
 
 
-@YAMLObject(tag="config")
+@YAMLObject(tag="metadata")
+class MetaData:
+    description: str = ""
+    author: str = ""
+
+
+@YAMLObject(tag="preset")
 class PresetConfig:
     ros_version: ROSVersion
+
+    metadata: MetaData = field(default_factory=MetaData)
+
+    workspaces: List[str] = field(default_factory=list)
+    env_var: Dict[str, str] = field(default_factory=dict)
+    pre_load: List[str] = field(default_factory=list)
+    post_load: List[str] = field(default_factory=list)
+
+    pre_unload: List[str] = field(default_factory=list)
+    post_unload: List[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         """

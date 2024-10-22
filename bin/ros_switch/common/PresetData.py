@@ -3,11 +3,19 @@ from enum import Enum
 from typing import Dict, Iterator, List, Tuple
 import os
 import yaml
+import re
 
 from .ScriptGenerator import ScriptGenerator
 from .PresetConfig import PresetConfig
 from .ShellCom import Shell
-from .constants import PRESET_EXTENSION, PRESET_DIR, PRESET_PATHS, UNLOAD_DIR, LOAD_DIR
+from .constants import (
+    PRESET_EXTENSION,
+    PRESET_DIR,
+    PRESET_PATHS,
+    UNLOAD_DIR,
+    LOAD_DIR,
+    SCRIPT_EXT,
+)
 from ..utils.file import read_file
 from ..utils.YAMLObject import YAMLProcessor
 
@@ -50,22 +58,25 @@ class PresetData:
             Shell.start_section("Preset YAML Loading")
             try:
                 # Load file
+                Shell.debug(f"Loading file {self.preset_file}")
                 data = read_file(self.preset_file)
                 if data is None:
                     raise RuntimeError(
                         f"Unable to load YAML data for preset {self.preset_name}"
                     )
 
+                # Pre-processing YAML string
                 Shell.debug(YAMLProcessor.print_mappings())
                 data = YAMLProcessor.raw_2_tags(data)
                 Shell.debug(f"Output of YAMLProcessor:\n{data}")
 
                 # Parse YAML Configuration
-                self.config = yaml.safe_load(data)
-                if self.config is None:
+                config: dict | None = yaml.safe_load(data)
+                if config is None or "preset" not in config.keys():
                     raise RuntimeError("The YAML file couldn't be parsed correctly ...")
-
+                self.config = config["preset"]
                 Shell.txt("\t-> YAML loaded successfully")
+                Shell.debug(f"{self.config}")
             except RuntimeError as e:
                 raise RuntimeError(f"Error while loading configuration file: \n\t{e}")
         return self.config
@@ -88,7 +99,16 @@ class PresetData:
                     f"Trying to generate config on unexisting config `{self.preset_name}`!"
                 )
 
-        generator = ScriptGenerator(self.config)
+        # Test if destination path exists
+        if self.install_script is None or self.uninstall_script is None:
+            raise RuntimeError("Trying to generate files on None paths ...")
+
+        generator = ScriptGenerator(
+            self.config,
+            self.preset_name,
+            self.install_script,
+            self.uninstall_script,
+        )
         generator.generate_load_unload()
 
     # =========================================================================
@@ -205,7 +225,11 @@ class PresetData:
         Returns:
             str: the path to the install script
         """
-        return PresetData.change_path_last_dir(preset_file, LOAD_DIR)
+        return re.sub(
+            PRESET_EXTENSION,
+            SCRIPT_EXT,
+            PresetData.change_path_last_dir(preset_file, LOAD_DIR),
+        )
 
     @staticmethod
     def preset_file2uninstall_file(preset_file: str) -> str:
@@ -218,7 +242,11 @@ class PresetData:
         Returns:
             str: the path to the uninstall script
         """
-        return PresetData.change_path_last_dir(preset_file, UNLOAD_DIR)
+        return re.sub(
+            PRESET_EXTENSION,
+            SCRIPT_EXT,
+            PresetData.change_path_last_dir(preset_file, UNLOAD_DIR),
+        )
 
     @staticmethod
     def change_path_last_dir(input_path: str, new_dir: str) -> str:
@@ -233,8 +261,7 @@ class PresetData:
             str: the modified path with the new directory
         """
         p_split = input_path.split(os.path.sep)
-        p_split[-2] = new_dir
-        return os.path.join(*p_split)
+        return re.sub(p_split[-2], new_dir, input_path)
 
     # =========================================================================
     # Directories walks function

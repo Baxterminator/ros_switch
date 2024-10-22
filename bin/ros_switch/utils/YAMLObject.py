@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from typing import TypeVar, Callable, Dict
 import re
 
+from ..common.ShellCom import Shell
+
 T = TypeVar("T")
 
 
@@ -23,7 +25,7 @@ class YAMLProcessor:
     def print_mappings() -> str:
         out_str = "YAMLProcessor mappings:\n"
         for key, tag in YAMLProcessor.FORWARD.items():
-            out_str += f"\t{key} <-> {tag}"
+            out_str += f"\t{key} <-> {tag}\n"
 
         return out_str
 
@@ -38,9 +40,11 @@ class YAMLProcessor:
         Returns:
             str: the modified string with tags for
         """
+        # Get root tag
+        root_tag = raw_yaml.split(":")[0]
         out_str = str(raw_yaml)
         for k, tag in YAMLProcessor.FORWARD.items():
-            out_str = re.sub(f"{k}\s?:", tag, out_str, flags=re.IGNORECASE)
+            out_str = re.sub(f"(^|\n\s+){k} ?:", rf"\1{k}: {tag}", out_str, flags=re.IGNORECASE)  # type: ignore
         return out_str
 
     @staticmethod
@@ -52,7 +56,7 @@ class YAMLProcessor:
 
 
 def YAMLObject(
-    _cls: T | None = None,
+    _cls: T | None = None,  # type: ignore
     *,
     tag: str | None = None,
     str_corresp: str | None = None,

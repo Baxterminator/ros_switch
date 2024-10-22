@@ -9,11 +9,12 @@ from typing import List, Tuple
 # -----------------------------------------------------------------------------
 APP_NAME = "ros_switch"
 AUTHOR = "Meltwin"
-VERSION = "v1.0.0"
+VERSION = "v0.1.0-alpha1"
 YEAR = "2024"
 
-ENV_CUSTOM_ADMIN_PATH = "RSWTCH_CUSTOM_ADMIN_PATHS"
-ENV_CUSTOM_PATH = "RSWTCH_CUSTOM_PATHS"
+ENV_RSWITCH_PRE = "RSWCH_"
+ENV_CUSTOM_ADMIN_PATH = ENV_RSWITCH_PRE + "CUSTOM_ADMIN_PATHS"
+ENV_CUSTOM_PATH = ENV_RSWITCH_PRE + "CUSTOM_PATHS"
 PRESET_DIR = "profiles"
 LOAD_DIR = "loader"
 UNLOAD_DIR = "unloader"
@@ -39,12 +40,14 @@ match platform.system().lower():
             CONF_DIR = ADMIN_CONF_DIR
         else:
             CONF_DIR = os.path.expandvars(os.path.join("%APPDATA%", APP_NAME))
+        SCRIPT_EXT = ".bat"
 
     case "linux":
         OS_TYPE = OSType.LINUX
         IS_ADMIN = os.getuid() == 0
         ADMIN_CONF_DIR = os.path.join("/opt", "ros", APP_NAME)
         CONF_DIR = os.path.join(os.path.expanduser("~"), ".local", "share", APP_NAME)
+        SCRIPT_EXT = ".sh"
     case "darwin":
         OS_TYPE = OSType.MACOS
         # TODO: Set admin path for configuration
@@ -59,6 +62,7 @@ match platform.system().lower():
                 "Preferences",
                 APP_NAME,
             )
+        SCRIPT_EXT = ".sh"
 
 
 INSTALL_DIR = os.path.realpath(os.path.join(__file__, "..", "..", "..", ".."))
