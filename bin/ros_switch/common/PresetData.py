@@ -17,7 +17,7 @@ from .constants import (
     SCRIPT_EXT,
 )
 from ..utils.file import read_file
-from ..utils.YAMLObject import YAMLProcessor
+from ..utils.data.YAMLObject import YAMLProcessor
 
 
 class PathType(Enum):

@@ -19,4 +19,4 @@ You can use the `rosswitch` command as follows:
 
 ## How to configure
 
-These scripts are based on Python 3. 
+These scripts are based on Python 3 (>= Python 3.8). 

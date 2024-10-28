@@ -24,6 +24,7 @@ class StrSections:
     FILL_CHAR = " "
     FILL_CHAR_COLOR = None
     HEADER_WIDTH = 80
+    EOL = "\n"
 
     @staticmethod
     def make_underlined_section(
@@ -32,15 +33,17 @@ class StrSections:
         delta_line=2,
         line_color: str | None = None,
         line_prefix="",
+        eol=EOL,
     ) -> str:
         line_pre = "" if line_color is None else line_color
         line_post = "" if line_color is None else Fore.RESET
-        return "{4}{0}:\n{4}{2}{1}{3}".format(
+        return "{4}{0}:{5}{4}{2}{1}{3}".format(
             txt,
             "".ljust(len(txt) + delta_line, line_char),
             line_pre,
             line_post,
             line_prefix,
+            eol,
         )
 
     @staticmethod
@@ -50,17 +53,19 @@ class StrSections:
         linechar=H_LINE_CHAR,
         line_color: str | None = None,
         line_prefix="",
+        eol=EOL,
     ) -> str:
         line_pre = "" if line_color is None else line_color
         line_post = "" if line_color is None else Fore.RESET
 
         line = "".ljust(width, linechar)
-        out = "{4}{2}{0}{3}\n{4}{1}\n{4}{2}{0}{3}\n".format(
+        out = "{4}{2}{0}{3}{5}{4}{1}{5}{4}{2}{0}{3}{5}".format(
             line,
             txt,
             line_pre,
             line_post,
             line_prefix,
+            eol,
         )
         return out
 
@@ -75,11 +80,10 @@ class StrSections:
         width=HEADER_WIDTH,
         line_prefix="",
         base_justify=Justify.CENTER,
+        eol=EOL,
     ) -> str:
-        line = "{2}{0}{1}{0}\n".format(
-            corner_char,
-            "".ljust(width - 2, hline_char),
-            line_prefix,
+        line = "{2}{0}{1}{0}{3}".format(
+            corner_char, "".ljust(width - 2, hline_char), line_prefix, eol
         )
         out = str(line)
 
@@ -99,13 +103,14 @@ class StrSections:
                 case Justify.RIGHT:
                     lengthen = lengthen.rjust(*args)
 
-            return "{0}{1}{2}{5}{3}{5}{4}{1}\n".format(
+            return "{0}{1}{2}{5}{3}{5}{4}{1}{6}".format(
                 line_prefix,
                 vline_char,
                 fill_pre,
                 lengthen,
                 fill_post,
                 fill_char,
+                eol,
             )
 
         # Put text

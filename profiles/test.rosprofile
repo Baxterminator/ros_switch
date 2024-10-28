@@ -11,7 +11,8 @@ preset:
     ros_version: 1
     env_var:
         TEST1: 0
-        ROS_LOCALHOST_ONLY: 1
+    ros:
+        localhost: true
     pre_load:
         - "echo 'Hello World'"
     workspaces:
