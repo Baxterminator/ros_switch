@@ -1,19 +1,33 @@
 #!/bin/bash
 
-get_script_dir() {
-    SOURCE=$1
-    while [ -L "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
-      DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
-      SOURCE=$(readlink "$SOURCE")
-      [[ $SOURCE != /* ]] && SOURCE=$DIR/$SOURCE # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
-    done
-    DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
-    echo $DIR
+get_shell() {
+  script_shell="$(readlink /proc/$$/exe | sed "s/.*\///")"
+  echo ${script_shell}
 }
 
-# Get the script directory
-export PATH="$PATH:$(get_script_dir $0)/bin"
+get_script_dir() {
+  SOURCE=$1
+  while [ -L "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+    DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
+    SOURCE=$(readlink "$SOURCE")
+    [[ $SOURCE != /* ]] && SOURCE=$DIR/$SOURCE # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+  done
+  DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
+  echo $DIR
+}
 
+if [[ "$(get_shell)" == "bash" ]]; then
+  sc_source="${BASH_SOURCE[0]}"
+else
+  sc_source="$0"
+fi
+
+# Get the script directory
+# DIR="$(get_script_dir $0)/bin"
+DIR="$(get_script_dir $sc_source)/bin"
+export PATH="$PATH:$DIR"
+
+alias rosswitch="source $DIR/.rosswitch"
 alias rswitch=rosswitch
 alias rswtch=rosswitch
-alias colbuild=colcon build --symlink-install
+alias colbuild="colcon build --symlink-install"

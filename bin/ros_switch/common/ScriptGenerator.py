@@ -1,7 +1,8 @@
 from datetime import datetime
 from textwrap import wrap
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, List
+
 from .PresetConfig import PresetConfig
 from .ShellCom import Shell
 from .constants import (
@@ -26,16 +27,24 @@ class ScriptGenerator(ABC):
     PRE_LOAD_CMDS = "Pre-Load commands"
     ENV_VARIABLES = "Environment vars"
     WORKSPACES_SOURCE = "Workspaces sourcing"
+    WORKSPACES_CLEAN = "Workspaces cleaning"
     POST_LOAD_CMDS = "Post-Load commands"
     PRE_UNLOAD_CMDS = "Pre-Unload commands"
     POST_UNLOAD_CMDS = "Post-Unload commands"
     ROS_ENVIRONMENT = "ROS environment"
+    DEPENDENCIES = "Dependencies"
 
+    # Environment variables
     DEFAULT_ROS_ENV = [
         "ROS_DISTRO",
         "ROS_VERSION",
         "ROS_PYTHON_VERSION",
+        "AMENT_PREFIX_PATH",
+        "COLCON_PREFIX_PATH",
     ]
+    PRESET_NAME_VAR = f"{ENV_RSWITCH_PRE}PRESET_NAME"
+    WORKSPACE_VAR = f"{ENV_RSWITCH_PRE}WORKSPACES"
+    ENV_TO_CLEAR = ["PYTHONPATH", "CMAKE_PREFIX_PATH", "LD_LIBRARY_PATH"]
 
     def __init__(
         self,
@@ -65,6 +74,11 @@ class ScriptGenerator(ABC):
         with open(self._load_path, "w+") as load_script:
             self.make_header(load_script)
 
+            # Add dependencies
+            self.log_step(load_script, ScriptGenerator.DEPENDENCIES, None)
+            self.__write(load_script, self._custom_load_dep())
+            self.__write(load_script, self._mk_workspace_list(self._config.workspaces))
+
             # Generate pre-load commands
             self.log_step(
                 load_script,
@@ -80,9 +94,16 @@ class ScriptGenerator(ABC):
                 ScriptGenerator.ENV_VARIABLES,
                 len(self._config.env_var.keys()),
             )
+            self.__write(
+                load_script,
+                self._mk_export_env(
+                    ScriptGenerator.PRESET_NAME_VAR, self._format(self._preset_name)
+                ),
+            )
             for env, val in self._config.env_var.items():
                 self.__write(load_script, self._mk_load_env(env, self._format(val)))
                 self.__write(load_script)
+            self.log_step(load_script, ScriptGenerator.ROS_ENVIRONMENT, None)
             for env, val in self._config.ros.get_env().items():
                 self.__write(load_script, self._mk_export_env(env, self._format(val)))
 
@@ -111,6 +132,14 @@ class ScriptGenerator(ABC):
         )
         with open(self._unload_path, "w+") as unload_script:
             self.make_header(unload_script)
+
+            # Add dependencies
+            self.log_step(unload_script, ScriptGenerator.DEPENDENCIES, None)
+            self.__write(unload_script, self._custom_unload_dep())
+            self.__write(
+                unload_script, self._mk_workspace_list(self._config.workspaces)
+            )
+
             # Generate pre-unload commands
             self.log_step(
                 unload_script,
@@ -137,6 +166,12 @@ class ScriptGenerator(ABC):
                 self.__write(unload_script, self._make_unset_env_var(env))
 
             # Manage CMake, Python, LD and regular paths
+            self.log_step(unload_script, ScriptGenerator.WORKSPACES_CLEAN, None)
+            for p in ScriptGenerator.ENV_TO_CLEAR:
+                self.__write(
+                    unload_script,
+                    self._make_clean_path(p, ScriptGenerator.WORKSPACE_VAR),
+                )
 
             # Generate post-unload commands
             self.log_step(
@@ -157,6 +192,10 @@ class ScriptGenerator(ABC):
         match OS_TYPE:
             case OSType.LINUX | OSType.MACOS:
                 return ShellScriptGenerator(config, preset_name, load_path, unload_path)
+            case OSType.WINDOWS:
+                raise RuntimeError(
+                    "Script generator not implemented for Windows systems !"
+                )
 
     def __format_line(self, txt: str) -> str:
         return "{}{}".format(txt, self._eol)
@@ -176,6 +215,16 @@ class ScriptGenerator(ABC):
     def _make_unset_var(self, var: str) -> str: ...
     @abstractmethod
     def _format(self, val: Any) -> Any: ...
+    @abstractmethod
+    def _mk_workspace_list(self, l: List[str]) -> str: ...
+    @abstractmethod
+    def _make_clean_path(self, path, ws) -> str: ...
+
+    def _custom_load_dep(self) -> str:
+        return ""
+
+    def _custom_unload_dep(self) -> str:
+        return ""
 
     def _mk_load_env(self, var: str, val: Any) -> str:
         return self._eol.join(
@@ -262,10 +311,53 @@ class ShellScriptGenerator(ScriptGenerator):
     def _make_load_workspace(self, ws: str) -> str:
         return f'source "{ws}/install/local_setup.sh"'
 
+    def _make_clean_path(self, path, ws) -> str:
+        return f"export {path}=$(_remove_paths ${path} ${ws})"
+
     def _make_unset_var(self, var: str) -> str:
         return f"unset {var}"
 
     def _format(self, val: Any) -> Any:
         if type(val) is bool:
             return 1 if val else 0
+        if type(val) is str:
+            s = val.replace('"', r"\"")
+            return f'"{s}"'
         return val
+
+    def _mk_workspace_list(self, l: List[str]) -> str:
+        out = f"{ScriptGenerator.WORKSPACE_VAR}=({self._eol}"
+        for wk in l:
+            out += f'\t"{wk}"{self._eol}'
+        out += ")"
+        return out
+
+    def _custom_unload_dep(self) -> str:
+        out = """_remove_paths()
+{
+    if [[ $SHELL_TYPE == "bash" ]]; then
+        IFS=':' read -ra PATHES <<< "$1"
+    else
+        IFS=':' read -rA PATHES <<< "$1"
+    fi
+    local THISPATH=""
+    local fpath
+    local ARGS="$@"
+    local N_ARGS="$#"
+    for fpath in "${PATHES[@]}"; do
+        local to_remove=0
+        local i
+        for (( i=2; i <=$N_ARGS; i++ )); do
+            if [[ $fpath = *"${ARGS[i]}"* ]]; then
+                to_remove=1
+            break
+            fi
+        done
+        if [ $to_remove -eq 0 ]; then
+            THISPATH="$THISPATH:$path"
+        fi
+    done
+    echo $THISPATH | cut -c2-
+}
+        """
+        return out

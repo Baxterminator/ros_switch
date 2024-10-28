@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 get_script_dir() {
     SOURCE=$1
@@ -22,6 +22,11 @@ format_msg() {
   echo "$msg"
 }
 
+get_shell() {
+  script_shell="$(readlink /proc/$$/exe | sed "s/.*\///")"
+  echo ${script_shell}
+}
+
 is_debug() {
   for k in $@; do
     if [[ "$k" == "-d" ]]; then 
@@ -31,12 +36,25 @@ is_debug() {
   done
   echo 0
 }
-debug=$(is_debug $@)
+debug=$(is_debug $@)  
+export SHELL_TYPE="$(get_shell)"
 
 # Get the script directory and call the Python script
-DIR="$(get_script_dir ${BASH_SOURCE[0]})"
+if [[ $SHELL_TYPE == "bash" ]]; then
+  sc_source="${BASH_SOURCE[0]}"
+else
+  sc_source="$0"
+fi
+DIR="$(get_script_dir $sc_source)"
 output=$(cd $DIR; python3 .rosswitch_py.py "$@")
-read -r -a arr <<< $output
+
+if [[ "$SHELL_TYPE" == "bash" ]]; then
+  read -r -a arr <<< $output
+  arr_start=0
+else
+  read -r -A arr <<< $output
+  arr_start=1
+fi
 
 # Get length of the array and test for odd values so that we get
 # a even value for array length (to keep key-value pairs)
@@ -49,7 +67,7 @@ fi
 # Iterate over the key values
 RED='\033[0;31m'
 NC='\033[0m' # No Color
-for (( i=0; i<${arr_length}; i=i+2 ));
+for (( i=$arr_start; i<${arr_length}+$arr_start; i=i+2 ));
 do
   key=${arr[i]}
   val=$(format_msg ${arr[i+1]})
