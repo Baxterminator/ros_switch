@@ -43,6 +43,7 @@ class ScriptGenerator(ABC):
         "COLCON_PREFIX_PATH",
     ]
     PRESET_NAME_VAR = f"{ENV_RSWITCH_PRE}PRESET_NAME"
+    FORMATTED_PRESET_NAME = f"{ENV_RSWITCH_PRE}FPRESET_NAME"
     WORKSPACE_VAR = f"{ENV_RSWITCH_PRE}WORKSPACES"
     ENV_TO_CLEAR = ["PYTHONPATH", "CMAKE_PREFIX_PATH", "LD_LIBRARY_PATH"]
     PRESET_COLOR = f"{ENV_RSWITCH_PRE}PRESET_COLOR"
@@ -100,6 +101,13 @@ class ScriptGenerator(ABC):
                 load_script,
                 self._mk_export_env(
                     ScriptGenerator.PRESET_NAME_VAR, self._format(self._preset_name)
+                ),
+            )
+            self.__write(
+                load_script,
+                self._mk_export_env(
+                    ScriptGenerator.FORMATTED_PRESET_NAME,
+                    self._format(f" {self._preset_name} "),
                 ),
             )
             self.__write(
@@ -179,6 +187,7 @@ class ScriptGenerator(ABC):
                 ScriptGenerator.PRESET_COLOR,
                 ScriptGenerator.PRESET_SUFFIX,
                 ScriptGenerator.PRESET_NAME_VAR,
+                ScriptGenerator.FORMATTED_PRESET_NAME,
             ]:
                 self.__write(unload_script, self._make_unset_env_var(env))
 
@@ -378,7 +387,7 @@ class ShellScriptGenerator(ScriptGenerator):
             fi
         done
         if [ $to_remove -eq 0 ]; then
-            THISPATH="$THISPATH:$path"
+            THISPATH="$THISPATH:$fpath"
         fi
     done
     echo $THISPATH | cut -c2-

@@ -296,7 +296,9 @@ class PresetData:
                 # Compute simple name
                 found_preset = PresetData.preset_file2preset_name(f)
 
-                if found_preset.lower() == preset_name.lower():
+                if (found_preset.lower() == preset_name.lower()) or (
+                    f.lower() == f"{preset_name.lower()}{PRESET_EXTENSION}"
+                ):
                     return PresetData(
                         found_preset,
                         is_admin,
