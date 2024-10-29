@@ -2,6 +2,7 @@ from datetime import datetime
 from textwrap import wrap
 from abc import ABC, abstractmethod
 from typing import Any, List
+from colorama import Fore
 
 from .PresetConfig import PresetConfig
 from .ShellCom import Shell
@@ -41,11 +42,21 @@ class ScriptGenerator(ABC):
         "ROS_PYTHON_VERSION",
         "AMENT_PREFIX_PATH",
         "COLCON_PREFIX_PATH",
+        "PKG_CONFIG_PATH",
+        "ROS_ETC_DIR",
+        "ROS_PACKAGE_PATH",
+        "ROS_ROOT",
+        "ROSLISP_PACKAGE_DIRECTORIES",
     ]
     PRESET_NAME_VAR = f"{ENV_RSWITCH_PRE}PRESET_NAME"
     FORMATTED_PRESET_NAME = f"{ENV_RSWITCH_PRE}FPRESET_NAME"
     WORKSPACE_VAR = f"{ENV_RSWITCH_PRE}WORKSPACES"
-    ENV_TO_CLEAR = ["PYTHONPATH", "CMAKE_PREFIX_PATH", "LD_LIBRARY_PATH"]
+    ENV_TO_CLEAR = [
+        "PYTHONPATH",
+        "CMAKE_PREFIX_PATH",
+        "LD_LIBRARY_PATH",
+        "PATH",
+    ]
     PRESET_COLOR = f"{ENV_RSWITCH_PRE}PRESET_COLOR"
     PRESET_SUFFIX = f"{ENV_RSWITCH_PRE}SUFFIX"
 
@@ -342,7 +353,20 @@ class ShellScriptGenerator(ScriptGenerator):
         return f"unset {var}"
 
     def _make_load_workspace(self, ws: str) -> str:
-        return f'source "{ws}/install/local_setup.sh"'
+        return f"""
+wk_found=0
+for sub in $subs
+do
+    install_path="{ws}${{sub}}local_setup.sh"
+    if [[ -f $install_path ]]; then
+        source $install_path
+        wk_found=1
+    fi
+done
+if [[ $wk_found == 0 ]]; then
+    echo -e "{Fore.YELLOW}Workspace {ws} does not seems to be a ROS workspace. No local_setup.sh found!{Fore.RESET}"
+fi
+    """
 
     def _make_clean_path(self, path, ws) -> str:
         return f"export {path}=$(_remove_paths ${path} ${ws})"
@@ -365,6 +389,9 @@ class ShellScriptGenerator(ScriptGenerator):
         out += ")"
         return out
 
+    def _custom_load_dep(self) -> str:
+        return """subs=(\"/\" \"/install/\" \"/devel/\")"""
+
     def _custom_unload_dep(self) -> str:
         out = """_remove_paths()
 {
@@ -374,14 +401,13 @@ class ShellScriptGenerator(ScriptGenerator):
         IFS=':' read -rA PATHES <<< "$1"
     fi
     local THISPATH=""
-    local fpath
-    local ARGS="$@"
-    local N_ARGS="$#"
+    local ARGS=("$@")
+    local N_ARGS="${#ARGS[@]}"
     for fpath in "${PATHES[@]}"; do
         local to_remove=0
-        local i
-        for (( i=2; i <=$N_ARGS; i++ )); do
-            if [[ $fpath = *"${ARGS[i]}"* ]]; then
+        local i=0
+        for (( i=2; i <= $N_ARGS; i++ )); do
+            if [[ $fpath = *"${ARGS[$i]}"* ]]; then
                 to_remove=1
             break
             fi
@@ -391,6 +417,5 @@ class ShellScriptGenerator(ScriptGenerator):
         fi
     done
     echo $THISPATH | cut -c2-
-}
-        """
+}"""
         return out
