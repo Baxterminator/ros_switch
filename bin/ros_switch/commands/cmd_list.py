@@ -3,6 +3,7 @@ from enum import Enum
 
 class Commands(Enum):
     LOAD = "load"
+    UNLOAD = "unload"
     LIST = "ls"
     GEN = "gen"
     NEW = "new"

@@ -19,6 +19,7 @@ from ros_switch.commands import (
     GenArgs,
     ToolsChoices,
     tools_section,
+    unload,
 )
 from ros_switch.common import Shell
 
@@ -43,9 +44,13 @@ def setup_parser() -> ArgumentParser:
     sp = parser.add_subparsers(dest="command", required=True)
 
     # Load configuration arguments
-
     load_parser = sp.add_parser(Commands.LOAD.value, help=": load a custom profile")
     load_parser.add_argument("name")
+
+    # Unload configuration arguments
+    unload_parser = sp.add_parser(
+        Commands.UNLOAD.value, help=": unload a custom profile"
+    )
 
     # List configurations arguments
     ListArgs.setup_parser(sp)  # type: ignore
@@ -74,7 +79,7 @@ def setup_parser() -> ArgumentParser:
     extend_parser.add_argument("new")
 
     debug_parser = sp.add_parser(
-        Commands.TOOLS.value, help="Debug commands for testing"
+        Commands.TOOLS.value, help=": internal tools for testing"
     )
     debug_parser.add_argument("tool_action", type=str, choices=ToolsChoices.get_vals())
 
@@ -107,6 +112,8 @@ if __name__ == "__main__":
         match Commands(args.command):
             case Commands.LOAD:
                 load(args.name)
+            case Commands.UNLOAD:
+                unload()
             case Commands.LIST:
                 Shell.print_header()
                 list_configs()
