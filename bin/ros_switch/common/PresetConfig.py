@@ -1,9 +1,11 @@
 from enum import IntEnum
-from typing import Dict, Generic, List, Any, TypeVar, get_args, get_origin
+from typing import Dict, Generic, List, Any, TypeVar
 from dataclasses import field
 
 from ..utils.data.YAMLObject import YAMLObject
 from ..utils.data.UseDefault import CustomClassField
+from ..utils.data.Color import Color, ColorValue
+from .ShellCom import Shell
 
 T = TypeVar("T")
 
@@ -69,11 +71,22 @@ class ROSEnvironment:
         return out
 
 
+@YAMLObject(tag="term")
+class TerminalConfig:
+    preset_color: Color = Color(ColorValue.BOLD_RED)
+
+    def __post_init__(self):
+        Shell.debug(f"Presetcolor: {self.preset_color} ({type(self.preset_color)})")
+        if type(self.preset_color) is str:
+            self.preset_color = Color(self.preset_color)
+
+
 @YAMLObject(tag="preset")
 class PresetConfig:
     ros_version: ROSVersion
 
     metadata: MetaData = field(default_factory=MetaData)
+    term: TerminalConfig = field(default_factory=TerminalConfig)
 
     workspaces: List[str] = field(default_factory=list)
 

@@ -17,3 +17,5 @@ preset:
         - "echo 'Hello World'"
     workspaces:
         - "$HOME/Prog/ROS2/dtu"
+    term:
+        preset_color: bblue

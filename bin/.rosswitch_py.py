@@ -8,9 +8,7 @@
 # =============================================================================
 
 from argparse import ArgumentParser
-from math import pi
 import sys
-from enum import Enum
 
 from ros_switch.commands import (
     Commands,
@@ -19,6 +17,8 @@ from ros_switch.commands import (
     ListArgs,
     generate_files,
     GenArgs,
+    ToolsChoices,
+    tools_section,
 )
 from ros_switch.common import Shell
 
@@ -73,6 +73,11 @@ def setup_parser() -> ArgumentParser:
     extend_parser.add_argument("parent")
     extend_parser.add_argument("new")
 
+    debug_parser = sp.add_parser(
+        Commands.TOOLS.value, help="Debug commands for testing"
+    )
+    debug_parser.add_argument("tool_action", type=str, choices=ToolsChoices.get_vals())
+
     return parser
 
 
@@ -114,6 +119,9 @@ if __name__ == "__main__":
             case Commands.EXTEND:
                 Shell.print_header()
                 Shell.txt("Making new configuration from parent ...")
+            case Commands.TOOLS:
+                Shell.print_header()
+                tools_section(args.tool_action)
             case _:
                 pass
     except RuntimeError as e:

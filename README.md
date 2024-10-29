@@ -27,6 +27,7 @@ You can use the `rosswitch` command as follows:
 - to load a ROS configuration, simply type `rosswitch <config_name>`
 - to list all the available configurations on the path: `rosswitch ls`
 - to force the reconfiguration of a config file: `rosswitch gen <config_name>`
+- to use some internal tools: `rosswitch tools <tool name>`
 
 <!-- - to make a new ROS configuration (for the actual user), type `rosswitch new <config_name>` -->
 <!-- - to extends from an existing ROS configuration, enter `rosswitch extend <parent_config> <child config>` -->

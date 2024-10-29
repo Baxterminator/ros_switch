@@ -7,6 +7,7 @@ class Commands(Enum):
     GEN = "gen"
     NEW = "new"
     EXTEND = "extend"
+    TOOLS = "tools"
 
     @staticmethod
     def is_value(txt: str) -> bool:

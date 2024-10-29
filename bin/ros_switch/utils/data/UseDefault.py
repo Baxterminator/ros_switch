@@ -70,17 +70,19 @@ def __process_class(cls: _T):
     setattr(cls, "_defaults", defaults)
 
     # Generate the post init function
-    def __post_init(self: _T):
-        to_modify: List[str] = []
-        for name, val in self.__annotations__.items():
-            if _has_mismatch_type(val, type(getattr(self, name))) and name in self._defaults.keys():  # type: ignore
-                Shell.debug(f"Found field of key `{name}` to be replaced")  # type: ignore
-                to_modify.append(name)
-        for name in to_modify:
-            v = getattr(self, name)
-            setattr(self, name, self._defaults[name]._make(v))  # type: ignore
+    if len(defaults.keys()) != 0:
 
-    setattr(cls, "__post_init__", __post_init)
+        def __post_init(self: _T):
+            to_modify: List[str] = []
+            for name, val in self.__annotations__.items():
+                if _has_mismatch_type(val, type(getattr(self, name))) and name in self._defaults.keys():  # type: ignore
+                    Shell.debug(f"Found field of key `{name}` to be replaced")  # type: ignore
+                    to_modify.append(name)
+            for name in to_modify:
+                v = getattr(self, name)
+                setattr(self, name, self._defaults[name]._make(v))  # type: ignore
+
+        setattr(cls, "__post_init__", __post_init)
 
     return dataclass(cls)  # type: ignore
 

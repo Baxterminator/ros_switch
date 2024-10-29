@@ -45,6 +45,8 @@ class ScriptGenerator(ABC):
     PRESET_NAME_VAR = f"{ENV_RSWITCH_PRE}PRESET_NAME"
     WORKSPACE_VAR = f"{ENV_RSWITCH_PRE}WORKSPACES"
     ENV_TO_CLEAR = ["PYTHONPATH", "CMAKE_PREFIX_PATH", "LD_LIBRARY_PATH"]
+    PRESET_COLOR = f"{ENV_RSWITCH_PRE}PRESET_COLOR"
+    PRESET_SUFFIX = f"{ENV_RSWITCH_PRE}SUFFIX"
 
     def __init__(
         self,
@@ -98,6 +100,20 @@ class ScriptGenerator(ABC):
                 load_script,
                 self._mk_export_env(
                     ScriptGenerator.PRESET_NAME_VAR, self._format(self._preset_name)
+                ),
+            )
+            self.__write(
+                load_script,
+                self._mk_export_env(
+                    ScriptGenerator.PRESET_COLOR,
+                    self._format(self._config.term.preset_color.term_color),
+                ),
+            )
+            self.__write(
+                load_script,
+                self._mk_export_env(
+                    ScriptGenerator.PRESET_SUFFIX,
+                    self._format(self._config.term.preset_color.BASH_SUFFIX),
                 ),
             )
             for env, val in self._config.env_var.items():
@@ -157,6 +173,14 @@ class ScriptGenerator(ABC):
             )
             for env, _ in self._config.env_var.items():
                 self.__write(unload_script, self._make_unload_env_var(env))
+
+            # Clearing application env var
+            for env in [
+                ScriptGenerator.PRESET_COLOR,
+                ScriptGenerator.PRESET_SUFFIX,
+                ScriptGenerator.PRESET_NAME_VAR,
+            ]:
+                self.__write(unload_script, self._make_unset_env_var(env))
 
             # Clearing ROS env variables
             self.log_step(unload_script, ScriptGenerator.ROS_ENVIRONMENT, None)
