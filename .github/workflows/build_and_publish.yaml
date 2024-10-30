@@ -1,0 +1,25 @@
+name: Build & Publish
+
+on:
+  push:
+    branches:
+      - doc
+
+
+jobs:
+  Publish-website:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+      - name: Install template dependencies
+        run: pip install -r requirements.txt
+      - name: Build website
+        run: mkdocs build
+      - name: Publish docs
+        uses: Cecilapp/GitHub-Pages-deploy@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          email: roboclubdtu@github.io
+          build_dir: build
