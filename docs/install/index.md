@@ -26,14 +26,14 @@ Go into the folder you downloaded Now, you have to add the setup script to your 
 
     ```shell
     python3 -m pip install -r requirements.txt
-    echo "source $(readlink -f .)/setup.sh" >> $HOME/.bashrc
+    echo -e "# ROS Switch Installation\nsource $(readlink -f .)/setup.sh" >> $HOME/.bashrc
     ```
 
 === "Zsh"
 
     ```shell
     python3 -m pip install -r requirements.txt
-    echo "source $(readlink -f .)/setup.sh" >> $HOME/.zshrc
+    echo -e "# ROS Switch Installation\nsource $(readlink -f .)/setup.sh" >> $HOME/.zshrc
     ```
 
 Now you can open a new tab and the application should be installed. You can check it by running:
@@ -43,3 +43,20 @@ rosswitch tools colors
 ```
 
 If there are no problem, you should see several lines of text with colors. Else, if any error occur you might have a problem with you installation or your system. In this case, please fill an issue on [the project GitHub](https://github.com/Baxterminator/ros_switch/issues).
+
+## Uninstall
+
+To uninstall the application, you have to remove the line from either your `.bashrc` or `.zshrc`:
+
+```bash
+# ROS Switch Installation
+source <your installation path>/setup.sh
+```
+
+And delete the folder containing the application.
+
+Cache files are located in: 
+
+- `$HOME/.local/share/ros_switch` 
+- `/opt/ros/ros_switch`
+
