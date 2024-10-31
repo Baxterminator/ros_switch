@@ -5,12 +5,17 @@ site_author: Meltwin
 copyright: © 2024 - Meltwin
 docs_dir: docs
 site_dir: build
+extra_css:
+  - assets/extra.css
 nav:
   - Home: index.md
+  - Install:
+      - install/compat.md
+      - install/index.md
 theme:
   name: material
-  favicon: assets/Logo_Thicker.svg
-  logo: assets/Logo_Thicker.svg
+  favicon: assets/logo_only.svg
+  logo: assets/logo_only.svg
   palette:
     # Palette toggle for light mode
     - scheme: default
@@ -18,7 +23,7 @@ theme:
         icon: material/brightness-7 
         name: Switch to dark mode
       primary: black
-      accent: red
+      accent: teal
 
     # Palette toggle for dark mode
     - scheme: slate
@@ -26,7 +31,7 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
-      primary: red
+      primary: teal
       accent: cyan
   features:
     - content.code.copy
@@ -37,6 +42,9 @@ markdown_extensions:
   - pymdownx.tabbed:
       alternate_style: true
   - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - md_in_html
   - footnotes
   - pymdownx.inlinehilite
