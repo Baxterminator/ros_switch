@@ -1,6 +1,19 @@
 from typing import Any, List
+
+from ..PresetConfig import PresetConfig, ROSVersion
 from .ScriptWriter import ScriptWriter, WriterConfig
 from colorama import Fore
+
+
+def is_ip(t: str) -> bool:
+    # Look for IPV4
+    v = t.split(".")
+    if len(v) == 4:
+        for ip_block in v:
+            if not ip_block.isnumeric():
+                return False
+        return True
+    return False
 
 
 class ShellScriptWriter(ScriptWriter):
@@ -17,6 +30,10 @@ class ShellScriptWriter(ScriptWriter):
             s = val.replace('"', r"\"")
             return f'"{s}"'
         return val
+
+    # --------------------------------------------------------
+    # Standard export functions
+    # --------------------------------------------------------
 
     def _write_cmd(self, cmd: str) -> None:
         self._write_line(cmd)
@@ -54,16 +71,99 @@ fi
     def _write_clean_path(self, path, ws) -> None:
         self._write_line(f"export {path}=$(_remove_paths ${path} ${ws})")
 
-    def _custom_load_dep(self) -> None:
+    def export_ros_ip(self, env, ip: str | None) -> None:
+        if ip is not None and is_ip(ip):
+            self.export_var(env, ip)
+        else:
+            self._write_line(
+                f"export {env}=$(_get_interface_ip {'' if ip is None else ip})"
+            )
+
+    # --------------------------------------------------------
+    # Shell functions to use in the program
+    # --------------------------------------------------------
+
+    def _custom_load_dep(self, config: PresetConfig) -> None:
+        self._write_line('subs=("/" "/install/" "/devel/")')
+
+        # Look for interface lookup for ROS_IP
+        if config.ros_version == ROSVersion.ROS_1 or (
+            config.ros.ros_ip.value is not None and not is_ip(config.ros.ros_ip.value)
+        ):
+            self._write_line(
+                r"""
+# Function that generate a (name, ip) map of the interfaces of this computer
+# Exported as a list of name@ip 
+function _get_interfaces() {
+    local ips=$(ifconfig)
+    local interface_regex="[a-zA-Z0-9]+:$"
+    local ip_regex="[0-9.]+"
+    
+    if [[ $SHELL_TYPE == "zsh" ]]; then
+        ips="$(tr '\n' ' ' <<< $ips)"
+        read -r -A ips <<< $ips
+    fi
+
+    # Iterate over the words to get interfaces names and ip
+    local out=("")
+    local found_interface=""
+    local in_interface=0
+    local inet_found=0
+    for l in $ips; do
+        # echo $l
+        # Check for interface name
+        if [[ $l =~ $interface_regex ]]; then
+            found_interface=$(echo $l | rev | cut -c2- | rev)
+            in_interface=1
+        elif [[ $in_interface == 1 ]] && [[ $l = *"inet"* ]]; then
+            inet_found=1
+        elif [[ $inet_found == 1 ]] && [[ $l =~ $ip_regex ]]; then
+            # Save interface 
+            out="$out $found_interface@$l"
+            in_interface=0
+            inet_found=0
+        fi    
+    done
+    echo $out
+}
+
+# Function that return the ip of the given interface name
+# It checks for similar expression as the given argument
+# If no argument is provided, default to localhost
+function _get_interface_ip() {
+    local interfaces=$(_get_interfaces)
+    
+    if [[ $SHELL_TYPE == "bash" ]]; then
+        IFS=' ' read -ra interfaces <<< "$interfaces"
+    else
+        IFS=' ' read -rA interfaces <<< "$interfaces"
+    fi
+
+    local to_find
+    if [[ -z $1 ]]; then
+        to_find="lo"
+    else
+        to_find=$1
+    fi
+
+    for intf in $interfaces; do
+        local intf_name=$(echo $intf | cut -d "@" -f 1)
+        local intf_ip=$(echo $intf | cut -d "@" -f 2)
+        if [[ $intf_name =~ $to_find ]]; then
+            echo $intf_ip
+            break
+        fi
+    done
+}
+"""
+            )
+
+    def _custom_unload_dep(self, config: PresetConfig) -> None:
         self._write_line(
             """
-subs=(\"/\" \"/install/\" \"/devel/\")
-"""
-        )
-
-    def _custom_unload_dep(self) -> None:
-        self._write_line(
-            """_remove_paths()
+# Function that remove ROS workspaces from a path (eg PATH, PYTHONPATH, ...)
+# Made by O. Kermorgan (https://github.com/oKermorgant/) for the ros_management_tools project
+function _remove_paths()
 {
     if [[ $SHELL_TYPE == "bash" ]]; then
         IFS=':' read -ra PATHES <<< "$1"

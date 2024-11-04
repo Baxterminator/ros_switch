@@ -4,6 +4,7 @@ from typing import List, Any
 from datetime import datetime
 from textwrap import wrap
 
+from ..PresetConfig import PresetConfig
 from ...utils.string_title import StrSections, Justify
 from ..constants import (
     ENV_RSWITCH_PRE,
@@ -78,8 +79,8 @@ class ScriptWriter(ABC):
     def _write_workspace_list(self, var: str, l: List[str]) -> None: ...
     @abstractmethod
     def _write_clean_path(self, path, ws) -> None: ...
-    def _custom_load_dep(self) -> None: ...
-    def _custom_unload_dep(self) -> None: ...
+    def _custom_load_dep(self, config: PresetConfig) -> None: ...
+    def _custom_unload_dep(self, config: PresetConfig) -> None: ...
 
     # --------------------------------------------------------
     # High Level export
@@ -90,7 +91,9 @@ class ScriptWriter(ABC):
 
     def _make_unload_env_var(self, var: str) -> None:
         self.export_var(var, f"${ENV_RSWITCH_PRE}OLD_{var}")
-        self.unset_var(f"${ENV_RSWITCH_PRE}OLD_{var}")
+        self.unset_var(f"{ENV_RSWITCH_PRE}OLD_{var}")
+
+    def export_ros_ip(self, env, ip) -> None: ...
 
     # --------------------------------------------------------
     # Writer utils

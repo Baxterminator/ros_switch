@@ -4,7 +4,7 @@ from typing import List
 from .ScriptWriter import ScriptWriter, WriterConfig
 from .ShellWriter import ShellScriptWriter
 
-from ..PresetConfig import PresetConfig
+from ..PresetConfig import PresetConfig, ROSEnvironment, ROSVersion
 from ..ShellCom import Shell
 from ..constants import (
     ENV_RSWITCH_PRE,
@@ -130,7 +130,7 @@ class ScriptGenerator:
     # -------------------------------------------------------------------------
     def _load_dependencies(self, writer: ScriptWriter) -> None:
         writer.log_step(Messages.DEPENDENCIES)
-        writer._custom_load_dep()
+        writer._custom_load_dep(self._config)
         writer._write_workspace_list(
             Vars.WORKSPACE_VAR,
             self._config.workspaces,
@@ -157,12 +157,25 @@ class ScriptGenerator:
     def _set_custom_env_vars(self, writer: ScriptWriter) -> None:
         for env, val in self._config.env_var.items():
             writer._mk_load_env(env, val)
-            writer.new_line()
 
     def _set_ros_env(self, writer: ScriptWriter) -> None:
+        # ROS environement variables
         writer.log_step(Messages.ROS_ENVIRONMENT)
+
+        # ROS IP special case
+        if self._config.ros_version == ROSVersion.ROS_1:
+            writer.export_ros_ip(
+                self._config.ros.ros_ip.env, self._config.ros.ros_ip.value
+            )
+
         for env, val in self._config.ros.get_env().items():
+            if env == ROSEnvironment.ros_ip.env:
+                if self._config.ros_version == ROSVersion.ROS_1:
+                    continue
+                writer.export_ros_ip(env, val)
             writer.export_var(env, val)
+
+        # ROS workspaces
         writer.log_step(Messages.WORKSPACES_SOURCE, len(self._config.workspaces))
         for wkspace in self._config.workspaces:
             writer._write_load_workspace(wkspace)
@@ -178,7 +191,7 @@ class ScriptGenerator:
 
     def _unload_dependencies(self, writer: ScriptWriter) -> None:
         writer.log_step(Messages.DEPENDENCIES)
-        writer._custom_unload_dep()
+        writer._custom_unload_dep(self._config)
         writer._write_workspace_list(Vars.WORKSPACE_VAR, self._config.workspaces)
 
     def _pre_unload_commands(self, writer: ScriptWriter) -> None:
