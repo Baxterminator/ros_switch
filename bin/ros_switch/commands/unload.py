@@ -1,14 +1,14 @@
 import os
 
 from ..common import PresetData
-from ..common.ScriptGenerator import ScriptGenerator
+from ..common.generator.ScriptGenerator import Vars
 from ..common import Shell
 
 
 def unload():
     # Fetch the env var that contains the current loaded preset (if there's one)
     # If there's one, unload it before loading the new one
-    current_preset = os.getenv(ScriptGenerator.PRESET_NAME_VAR)
+    current_preset = os.getenv(Vars.PRESET_NAME)
     if current_preset is not None:
         preset = PresetData.find_profile(current_preset)
         if preset is None:

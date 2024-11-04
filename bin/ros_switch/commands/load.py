@@ -2,7 +2,6 @@ import os
 
 from .cmd_list import Commands
 from ..common import PresetData
-from ..common.ScriptGenerator import ScriptGenerator
 from ..common import Shell
 from ..utils.Arguments import ArgumentGroup
 

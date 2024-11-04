@@ -5,7 +5,7 @@ import os
 import yaml
 import re
 
-from .ScriptGenerator import ScriptGenerator
+from .generator.ScriptGenerator import ScriptGenerator
 from .PresetConfig import PresetConfig
 from .ShellCom import Shell
 from .constants import (
@@ -103,7 +103,7 @@ class PresetData:
         if self.install_script is None or self.uninstall_script is None:
             raise RuntimeError("Trying to generate files on None paths ...")
 
-        generator = ScriptGenerator.get_generator(
+        generator = ScriptGenerator(
             self.config,
             self.preset_name,
             self.install_script,
