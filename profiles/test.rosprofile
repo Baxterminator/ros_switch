@@ -20,3 +20,15 @@ preset:
         - "$HOME/Prog/ROS2/dtu"
     term:
         preset_color: bblue
+    paths:
+        library:
+            - $HOME/test/library/
+        python:
+            - $HOME/test/python/
+        cmake:
+            - $HOME/test/cmake/
+        path:
+            - $HOME/test/path/
+        others:
+            custom:
+                - $HOME/test/custom/

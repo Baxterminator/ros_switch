@@ -62,6 +62,12 @@ fi
     """
         )
 
+    def add_to_path(self, path_env: str, path) -> None:
+        self.export_var(path_env, f"${path_env}:{path}")
+
+    def remove_from_path(self, path_env: str, path: str) -> None:
+        self.export_var(path_env, f"$(_remove_paths ${path_env} {path})")
+
     def _write_workspace_list(self, var: str, l: List[str]) -> None:
         self._write_line(f"{var}=(")
         for wk in l:
@@ -69,7 +75,7 @@ fi
         self._write_line(f")")
 
     def _write_clean_path(self, path, ws) -> None:
-        self._write_line(f"export {path}=$(_remove_paths ${path} ${ws})")
+        self.remove_from_path(path, f"${ws}")
 
     def export_ros_ip(self, env, ip: str | None) -> None:
         if ip is not None and is_ip(ip):
