@@ -4,6 +4,8 @@ Tools to manage ROS installations on your computer. It works by automatically ge
 
 This project is inspired by the work of [Oliver Kermorgant's ros management tools scripts](https://github.com/oKermorgant/ros_management_tools).
 
+You can find the documentation and usage of this application on this [ROS Switch - Online Documentation](https://baxterminator.github.io/ros_switch/) page.
+
 Copyright (c) Meltwin - 2024 
 
 Distributed under the MIT Licence
@@ -58,5 +60,3 @@ preset:
     workspaces:
         - "$HOME/Prog/ROS2/my_workspace"
 ```
-
-### Documentation comming soon !
