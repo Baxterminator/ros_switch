@@ -9,7 +9,7 @@ from typing import List, Tuple
 # -----------------------------------------------------------------------------
 APP_NAME = "ros_switch"
 AUTHOR = "Meltwin"
-VERSION = "v1.0.0-alpha2"
+VERSION = "v1.0.0-alpha3"
 YEAR = "2024"
 
 ENV_RSWITCH_PRE = "RSWCH_"

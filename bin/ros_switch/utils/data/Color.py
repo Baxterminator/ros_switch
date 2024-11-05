@@ -46,7 +46,7 @@ class ColorValue(Enum):
 
 class Color:
 
-    BASH_SUFFIX = Fore.RESET + Back.RESET
+    BASH_SUFFIX = Fore.RESET + Back.RESET + Style.RESET_ALL
 
     def __init__(self, color: str | ColorValue) -> None:
         self._color: ColorValue
