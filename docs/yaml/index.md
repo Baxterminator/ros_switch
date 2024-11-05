@@ -15,7 +15,7 @@ preset:
         date:   "" # <str>
     term:
         preset_color: "bred" # <str> 
-    workspaces: # list of workspace pathes
+    workspaces: # list of workspace path
         - "<your workspace 1>"
         - "<your workspace 2>"
     env_var:

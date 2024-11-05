@@ -12,6 +12,8 @@ nav:
   - Install:
       - install/compat.md
       - install/index.md
+  - Usage: cmd/index.md
+  - config/index.md
   - yaml/index.md
 theme:
   name: material
