@@ -81,6 +81,15 @@ class TerminalConfig:
             self.preset_color = Color(self.preset_color)
 
 
+@YAMLObject(tag="paths")
+class CustomPaths:
+    library: List[str] = field(default_factory=list)
+    cmake: List[str] = field(default_factory=list)
+    python: List[str] = field(default_factory=list)
+    path: List[str] = field(default_factory=list)
+    others: Dict[str, List[str]] = field(default_factory=dict)
+
+
 @YAMLObject(tag="preset")
 class PresetConfig:
     ros_version: ROSVersion
@@ -91,6 +100,7 @@ class PresetConfig:
     workspaces: List[str] = field(default_factory=list)
 
     env_var: Dict[str, str] = field(default_factory=dict)
+    paths: CustomPaths = field(default_factory=CustomPaths)
     ros: ROSEnvironment = field(default_factory=ROSEnvironment)
 
     pre_load: List[str] = field(default_factory=list)

@@ -46,7 +46,7 @@ class ColorValue(Enum):
 
 class Color:
 
-    BASH_SUFFIX = Fore.RESET + Back.RESET
+    BASH_SUFFIX = Fore.RESET + Back.RESET + Style.RESET_ALL
 
     def __init__(self, color: str | ColorValue) -> None:
         self._color: ColorValue
@@ -125,4 +125,4 @@ class Color:
             case ColorValue.BOLD_LIGHT_CYAN:
                 return Style.BRIGHT + Back.LIGHTCYAN_EX + Fore.BLACK
             case ColorValue.BOLD_LIGHT_WHITE:
-                return Style.BRIGHT + Back.WHITE + Fore.BLACK
+                return Style.BRIGHT + Back.LIGHTWHITE_EX + Fore.BLACK

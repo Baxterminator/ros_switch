@@ -25,6 +25,7 @@ class Messages:
     POST_UNLOAD_CMDS = "Post-Unload commands"
     ROS_ENVIRONMENT = "ROS environment"
     DEPENDENCIES = "Dependencies"
+    PATHS = "Custom paths"
 
 
 class Vars:
@@ -103,6 +104,7 @@ class ScriptGenerator:
             self._pre_load_commands(ldscript)
             self._set_app_env_vars(ldscript)
             self._set_custom_env_vars(ldscript)
+            self._set_custom_paths(ldscript)
             self._set_ros_env(ldscript)
             self._post_load_commands(ldscript)
 
@@ -121,8 +123,9 @@ class ScriptGenerator:
             self._unload_dependencies(uldscript)
             self._pre_unload_commands(uldscript)
             self._unload_env_vars(uldscript)
+            self._remove_custom_paths(uldscript)
             self._unload_ros_env(uldscript)
-            self._clear_pathes(uldscript)
+            self._clear_path(uldscript)
             self._post_unload_commands(uldscript)
 
     # -------------------------------------------------------------------------
@@ -157,6 +160,24 @@ class ScriptGenerator:
     def _set_custom_env_vars(self, writer: ScriptWriter) -> None:
         for env, val in self._config.env_var.items():
             writer._mk_load_env(env, val)
+
+    def _set_custom_paths(self, writer: ScriptWriter) -> None:
+        writer.log_step(Messages.PATHS)
+
+        def process_path(path: str | Paths, pathes: List[str]):
+            pname = path if type(path) is str else path.value  # type: ignore
+
+            for p in pathes:
+                writer.add_to_path(pname, p)
+
+        process_path(Paths.LIBRARIES, self._config.paths.library)
+        process_path(Paths.PYTHON, self._config.paths.python)
+        process_path(Paths.CMAKE, self._config.paths.cmake)
+        process_path(Paths.GLOBAL, self._config.paths.path)
+
+        # Custom paths
+        for pname, paths in self._config.paths.others.items():
+            process_path(pname.upper(), paths)
 
     def _set_ros_env(self, writer: ScriptWriter) -> None:
         # ROS environement variables
@@ -204,6 +225,21 @@ class ScriptGenerator:
         for env, _ in self._config.env_var.items():
             writer._make_unload_env_var(env)
 
+    def _remove_custom_paths(self, writer: ScriptWriter) -> None:
+        writer.log_step(Messages.PATHS)
+
+        def process_path(path: str | Paths, pathes: List[str]):
+            pname = path if type(path) is str else path.value  # type: ignore
+            for p in pathes:
+                writer.remove_from_path(pname, p)
+
+        process_path(Paths.LIBRARIES, self._config.paths.library)
+        process_path(Paths.PYTHON, self._config.paths.python)
+        process_path(Paths.CMAKE, self._config.paths.cmake)
+        process_path(Paths.GLOBAL, self._config.paths.path)
+        for pname, plist in self._config.paths.others.items():
+            process_path(pname.upper(), plist)
+
     def _unload_ros_env(self, writer: ScriptWriter) -> None:
         writer.log_step(Messages.ROS_ENVIRONMENT)
         for env_var in Vars.get_vars_list():
@@ -211,7 +247,7 @@ class ScriptGenerator:
         for env, _ in self._config.ros.get_env().items():
             writer.unset_var(env)
 
-    def _clear_pathes(self, writer: ScriptWriter) -> None:
+    def _clear_path(self, writer: ScriptWriter) -> None:
         writer.log_step(Messages.WORKSPACES_CLEAN)
         for p in Paths.__members__.values():
             writer._write_clean_path(p.value, Vars.WORKSPACE_VAR)
