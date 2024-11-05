@@ -11,7 +11,7 @@ That's what this project is about:
 - simplifying the ROS environment configuration through a simple YAML file that can be easily shared, 
 - provide tools to switch between custom environment with a proper cleaning of pathes and environment variables.
 
-This project was heavily inspired from the [ros_management_tools](https://github.com/oKermorgant/ros_management_tools/) project from the professor O. Kermorgant from Centrale Nantes, who made a simple bash script for switching between the several ROS environments needed for the labs.
+This project was heavily inspired from the [ros_management_tools](https://github.com/oKermorgant/ros_management_tools/) project from the professor O. Kermorgant from the LS2N (*laboratory on the Centrale Nantes campus, France*), who made a simple bash script for switching between the several ROS environments needed for the labs.
 
 
 <p style="text-align:center">

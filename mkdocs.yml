@@ -12,6 +12,7 @@ nav:
   - Install:
       - install/compat.md
       - install/index.md
+  - yaml/index.md
 theme:
   name: material
   favicon: assets/logo_only.svg

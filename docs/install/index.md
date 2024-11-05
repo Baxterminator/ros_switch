@@ -20,7 +20,7 @@ cd ros_switch
 
 ## Install the application
 
-Go into the folder you downloaded Now, you have to add the setup script to your `.bashrc` or `.zshrc` file (depending on the terminal you use). Just type the following command on your terminal:
+Now, you have to add the setup script to your `.bashrc` or `.zshrc` file (depending on the terminal you use). Just type the following command on your terminal:
 
 === "Bash"
 
@@ -36,7 +36,7 @@ Go into the folder you downloaded Now, you have to add the setup script to your 
     echo -e "# ROS Switch Installation\nsource $(readlink -f .)/setup.sh" >> $HOME/.zshrc
     ```
 
-Now you can open a new tab and the application should be installed. You can check it by running:
+Now you can open a new terminal and the application should be installed. You can check it by running:
 
 ```shell
 rosswitch tools colors
