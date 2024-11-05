@@ -125,4 +125,4 @@ class Color:
             case ColorValue.BOLD_LIGHT_CYAN:
                 return Style.BRIGHT + Back.LIGHTCYAN_EX + Fore.BLACK
             case ColorValue.BOLD_LIGHT_WHITE:
-                return Style.BRIGHT + Back.WHITE + Fore.BLACK
+                return Style.BRIGHT + Back.LIGHTWHITE_EX + Fore.BLACK
