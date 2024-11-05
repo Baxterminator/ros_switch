@@ -122,7 +122,7 @@ class ScriptGenerator:
             self._pre_unload_commands(uldscript)
             self._unload_env_vars(uldscript)
             self._unload_ros_env(uldscript)
-            self._clear_pathes(uldscript)
+            self._clear_path(uldscript)
             self._post_unload_commands(uldscript)
 
     # -------------------------------------------------------------------------
@@ -211,7 +211,7 @@ class ScriptGenerator:
         for env, _ in self._config.ros.get_env().items():
             writer.unset_var(env)
 
-    def _clear_pathes(self, writer: ScriptWriter) -> None:
+    def _clear_path(self, writer: ScriptWriter) -> None:
         writer.log_step(Messages.WORKSPACES_CLEAN)
         for p in Paths.__members__.values():
             writer._write_clean_path(p.value, Vars.WORKSPACE_VAR)
