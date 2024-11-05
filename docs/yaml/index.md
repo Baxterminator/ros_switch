@@ -72,16 +72,16 @@ The fields in this block are:
 
 - `preset_color` (`optional <str>`): the color scheme to use for this preset in the PS1 field. The list of colors can be visualized with the command `rosswitch tools colors`. But here's a list of what color are available:
 
-| Normal color | Light color | Bold color |
-| :----------: | :---------: | :--------: |
-|    black     |   lblack    |   bblack   |
-|     red      |    lred     |    bred    |
-|    green     |   lgreen    |   bgreen   |
-|    yellow    |   lyellow   |  byellow   |
-|     blue     |    lblue    |   bblue    |
-|    purple    |   lpurple   |  bpurple   |
-|     cyan     |    lcyan    |   bcyan    |
-|    white     |   lwhite    |   bwhite   |
+| Normal color | Light color | Bold color | Light Bold color |
+| :----------: | :---------: | :--------: | :--------------: |
+|    black     |   lblack    |   bblack   |     blblack      |
+|     red      |    lred     |    bred    |      blred       |
+|    green     |   lgreen    |   bgreen   |     blgreen      |
+|    yellow    |   lyellow   |  byellow   |     blyellow     |
+|     blue     |    lblue    |   bblue    |      blblue      |
+|    purple    |   lpurple   |  bpurple   |     blpurple     |
+|     cyan     |    lcyan    |   bcyan    |      blcyan      |
+|    white     |   lwhite    |   bwhite   |     blwhite      |
 
 <figure markdown="span">
   <img src="./custom_ps1.png" alt="Custom PS1" style="width:100%"/>
