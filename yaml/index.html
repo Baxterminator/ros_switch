@@ -506,6 +506,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#block-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      Block paths
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#fields-pre_load-post_load-pre_unload-and-post_unload" class="md-nav__link">
     <span class="md-ellipsis">
       Fields pre_load, post_load, pre_unload and post_unload
@@ -612,6 +621,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#block-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      Block paths
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#fields-pre_load-post_load-pre_unload-and-post_unload" class="md-nav__link">
     <span class="md-ellipsis">
       Fields pre_load, post_load, pre_unload and post_unload
@@ -668,15 +686,27 @@
 <a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="w">        </span><span class="nt">output_format</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span><span class="w"> </span><span class="c1"># &lt;str | None&gt;</span>
 <a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="w">        </span><span class="nt">use_stdout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span><span class="w"> </span><span class="c1"># &lt;bool | None&gt;</span>
 <a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="w">        </span><span class="nt">buffered</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span><span class="w"> </span><span class="c1"># &lt;bool | None&gt;</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="w">    </span><span class="nt">pre_load</span><span class="p">:</span><span class="w"> </span><span class="c1"># &lt;List[str]&gt;</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;my_cmd</span><span class="nv"> </span><span class="s">1&quot;</span>
-<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;my_cmd</span><span class="nv"> </span><span class="s">2</span>
-<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a><span class="w">    </span><span class="s">post_load:</span><span class="nv"> </span><span class="s">#</span><span class="nv"> </span><span class="s">&lt;List[str]&gt;</span>
-<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a><span class="w">        </span><span class="s">-</span><span class="nv"> </span><span class="s">&quot;</span><span class="l l-Scalar l-Scalar-Plain">my_cmd 1&quot;</span>
-<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a><span class="w">    </span><span class="nt">pre_unload</span><span class="p">:</span><span class="w"> </span><span class="c1"># &lt;List[str]&gt;</span>
-<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;my_cmd</span><span class="nv"> </span><span class="s">1&quot;</span>
-<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a><span class="w">    </span><span class="nt">post_unload</span><span class="p">:</span><span class="w"> </span><span class="c1"># &lt;List[str]&gt;</span>
-<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;my_cmd</span><span class="nv"> </span><span class="s">1&quot;</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="w">    </span><span class="nt">paths</span><span class="p">:</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a><span class="w">        </span><span class="nt">library</span><span class="p">:</span><span class="w"> </span><span class="c1"># &lt;List[str]&gt;</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;$HOME/path1&quot;</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a><span class="w">        </span><span class="nt">cmake</span><span class="p">:</span><span class="w"> </span><span class="c1"># &lt;List[str]&gt;</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a><span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;$HOME/path1&quot;</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a><span class="w">        </span><span class="nt">python</span><span class="p">:</span><span class="w"> </span><span class="c1"># &lt;List[str]&gt;</span>
+<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a><span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;$HOME/path1&quot;</span>
+<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a><span class="w">        </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="c1"># &lt;List[str]&gt;</span>
+<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a><span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;$HOME/path1&quot;</span>
+<a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a><span class="w">        </span><span class="nt">others</span><span class="p">:</span><span class="w"> </span><span class="c1"># &lt;Dict[str, List[str]]&gt;</span>
+<a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a><span class="w">            </span><span class="nt">custom_env</span><span class="p">:</span>
+<a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a><span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;$HOME/path1&quot;</span>
+<a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a><span class="w">    </span><span class="nt">pre_load</span><span class="p">:</span><span class="w"> </span><span class="c1"># &lt;List[str]&gt;</span>
+<a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;my_cmd</span><span class="nv"> </span><span class="s">1&quot;</span>
+<a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;my_cmd</span><span class="nv"> </span><span class="s">2</span>
+<a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a><span class="w">    </span><span class="s">post_load:</span><span class="nv"> </span><span class="s">#</span><span class="nv"> </span><span class="s">&lt;List[str]&gt;</span>
+<a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a><span class="w">        </span><span class="s">-</span><span class="nv"> </span><span class="s">&quot;</span><span class="l l-Scalar l-Scalar-Plain">my_cmd 1&quot;</span>
+<a id="__codelineno-0-44" name="__codelineno-0-44" href="#__codelineno-0-44"></a><span class="w">    </span><span class="nt">pre_unload</span><span class="p">:</span><span class="w"> </span><span class="c1"># &lt;List[str]&gt;</span>
+<a id="__codelineno-0-45" name="__codelineno-0-45" href="#__codelineno-0-45"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;my_cmd</span><span class="nv"> </span><span class="s">1&quot;</span>
+<a id="__codelineno-0-46" name="__codelineno-0-46" href="#__codelineno-0-46"></a><span class="w">    </span><span class="nt">post_unload</span><span class="p">:</span><span class="w"> </span><span class="c1"># &lt;List[str]&gt;</span>
+<a id="__codelineno-0-47" name="__codelineno-0-47" href="#__codelineno-0-47"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;my_cmd</span><span class="nv"> </span><span class="s">1&quot;</span>
 </code></pre></div>
 <h2 id="field-ros_version">Field <code>ros_version</code></h2>
 <p><strong>Type</strong>: <code>mandatory &lt;int&gt; (choices=[1,2])</code></p>
@@ -703,6 +733,7 @@
 <th style="text-align: center;">Normal color</th>
 <th style="text-align: center;">Light color</th>
 <th style="text-align: center;">Bold color</th>
+<th style="text-align: center;">Light Bold color</th>
 </tr>
 </thead>
 <tbody>
@@ -710,41 +741,49 @@
 <td style="text-align: center;">black</td>
 <td style="text-align: center;">lblack</td>
 <td style="text-align: center;">bblack</td>
+<td style="text-align: center;">blblack</td>
 </tr>
 <tr>
 <td style="text-align: center;">red</td>
 <td style="text-align: center;">lred</td>
 <td style="text-align: center;">bred</td>
+<td style="text-align: center;">blred</td>
 </tr>
 <tr>
 <td style="text-align: center;">green</td>
 <td style="text-align: center;">lgreen</td>
 <td style="text-align: center;">bgreen</td>
+<td style="text-align: center;">blgreen</td>
 </tr>
 <tr>
 <td style="text-align: center;">yellow</td>
 <td style="text-align: center;">lyellow</td>
 <td style="text-align: center;">byellow</td>
+<td style="text-align: center;">blyellow</td>
 </tr>
 <tr>
 <td style="text-align: center;">blue</td>
 <td style="text-align: center;">lblue</td>
 <td style="text-align: center;">bblue</td>
+<td style="text-align: center;">blblue</td>
 </tr>
 <tr>
 <td style="text-align: center;">purple</td>
 <td style="text-align: center;">lpurple</td>
 <td style="text-align: center;">bpurple</td>
+<td style="text-align: center;">blpurple</td>
 </tr>
 <tr>
 <td style="text-align: center;">cyan</td>
 <td style="text-align: center;">lcyan</td>
 <td style="text-align: center;">bcyan</td>
+<td style="text-align: center;">blcyan</td>
 </tr>
 <tr>
 <td style="text-align: center;">white</td>
 <td style="text-align: center;">lwhite</td>
 <td style="text-align: center;">bwhite</td>
+<td style="text-align: center;">blwhite</td>
 </tr>
 </tbody>
 </table>
@@ -787,6 +826,17 @@
 <li><code>output_format</code> (<code>optional &lt;str&gt;</code>): define how the ROS logging format should be.<br> Correspond to <code>RCUTILS_CONSOLE_OUTPUT_FORMAT</code> env var.<br> See <a href="https://docs.ros.org/en/rolling/Concepts/Intermediate/About-Logging.html#environment-variables">ROS 2 documentation - Logging</a></li>
 <li><code>use_stdout</code> (<code>optional &lt;bool&gt;</code>): define whether the logging output should go to stdout (1) or stderr (0).<br> Correspond to <code>RCUTILS_LOGGING_USE_STDOUT</code> env var.<br> See <a href="https://docs.ros.org/en/rolling/Concepts/Intermediate/About-Logging.html#environment-variables">ROS 2 documentation - Logging</a></li>
 <li><code>buffered</code> (<code>optional &lt;bool&gt;</code>): define whether the logging output should be in buffered (1) or unbuffured mode (0).<br> Correspond to <code>RCUTILS_LOGGING_BUFFERED_STREAM</code> env var.<br> See <a href="https://docs.ros.org/en/rolling/Concepts/Intermediate/About-Logging.html#environment-variables">ROS 2 documentation - Logging</a></li>
+</ul>
+<h2 id="block-paths">Block paths</h2>
+<p><strong>Type</strong>: <code>optional</code></p>
+<p>This block let you customize environment variable paths with automatization on cleaning.</p>
+<p>The fields in this block is:</p>
+<ul>
+<li><code>library</code> (<code>optional &lt;List[str]&gt;</code>): add all elements of this list to the <code>LD_LIBRARY_PATH</code> environment variable.</li>
+<li><code>python</code> (<code>optional &lt;List[str]&gt;</code>): add all elements of this list to the <code>PYTHONPATH</code> environment variable.</li>
+<li><code>cmake</code> (<code>optional &lt;List[str]&gt;</code>): add all elements of this list to the <code>CMAKE_PREFIX_PATH</code> environment variable.</li>
+<li><code>path</code> (<code>optional &lt;List[str]&gt;</code>): add all elements of this list to the <code>PATH</code> environment variable.</li>
+<li><code>others</code> (<code>optional &lt;Dict[str, List[str]]&gt;</code>): define path list environment variable as the key, and the list as element to add to this one.</li>
 </ul>
 <h2 id="fields-pre_load-post_load-pre_unload-and-post_unload">Fields <code>pre_load</code>, <code>post_load</code>, <code>pre_unload</code> and <code>post_unload</code></h2>
 <p><strong>Type</strong>: <code>optional &lt;List[str]&gt;</code></p>
