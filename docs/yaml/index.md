@@ -33,6 +33,18 @@ preset:
         output_format: None # <str | None>
         use_stdout: None # <bool | None>
         buffered: None # <bool | None>
+    paths:
+        library: # <List[str]>
+            - "$HOME/path1"
+        cmake: # <List[str]>
+            - "$HOME/path1"
+        python: # <List[str]>
+            - "$HOME/path1"
+        path: # <List[str]>
+            - "$HOME/path1"
+        others: # <Dict[str, List[str]]>
+            custom_env:
+                - "$HOME/path1"
     pre_load: # <List[str]>
         - "my_cmd 1"
         - "my_cmd 2
@@ -129,6 +141,20 @@ The fields in this block are:
 - `output_format` (`optional <str>`): define how the ROS logging format should be.<br> Correspond to `RCUTILS_CONSOLE_OUTPUT_FORMAT` env var.<br> See [ROS 2 documentation - Logging](https://docs.ros.org/en/rolling/Concepts/Intermediate/About-Logging.html#environment-variables)
 - `use_stdout` (`optional <bool>`): define whether the logging output should go to stdout (1) or stderr (0).<br> Correspond to `RCUTILS_LOGGING_USE_STDOUT` env var.<br> See [ROS 2 documentation - Logging](https://docs.ros.org/en/rolling/Concepts/Intermediate/About-Logging.html#environment-variables)
 - `buffered` (`optional <bool>`): define whether the logging output should be in buffered (1) or unbuffured mode (0).<br> Correspond to `RCUTILS_LOGGING_BUFFERED_STREAM` env var.<br> See [ROS 2 documentation - Logging](https://docs.ros.org/en/rolling/Concepts/Intermediate/About-Logging.html#environment-variables)
+
+## Block paths
+
+**Type**: `optional`
+
+This block let you customize environment variable paths with automatization on cleaning.
+
+The fields in this block is:
+
+- `library` (`optional <List[str]>`): add all elements of this list to the `LD_LIBRARY_PATH` environment variable.
+- `python` (`optional <List[str]>`): add all elements of this list to the `PYTHONPATH` environment variable.
+- `cmake` (`optional <List[str]>`): add all elements of this list to the `CMAKE_PREFIX_PATH` environment variable.
+- `path` (`optional <List[str]>`): add all elements of this list to the `PATH` environment variable.
+- `others` (`optional <Dict[str, List[str]]>`): define path list environment variable as the key, and the list as element to add to this one.
 
 ## Fields `pre_load`, `post_load`, `pre_unload` and `post_unload`
     
